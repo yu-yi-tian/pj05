@@ -1,5 +1,7 @@
 package com.example.demo.controllers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +21,7 @@ import com.example.demo.model.requests.CreateUserRequest;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+	private static final Logger logger = LogManager.getLogger(UserController.class);
 	
 	@Autowired
 	private ApplicationUserRepository applicationUserRepository;
@@ -49,10 +52,12 @@ public class UserController {
 		user.setCart(cart);
 		if(createUserRequest.getPassword().length() < 7 ||
 			!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())){
-			return ResponseEntity.badRequest().build();
+			logger.info("CreateUser fails.");
+		    return ResponseEntity.badRequest().build();
 		}
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 		applicationUserRepository.save(user);
+        logger.info("CreateUser succeed.");
 		return ResponseEntity.ok(user);
 	}
 	

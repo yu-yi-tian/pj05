@@ -14,12 +14,13 @@ import com.example.demo.model.persistence.ApplicationUser;
 import com.example.demo.model.persistence.UserOrder;
 import com.example.demo.model.persistence.repositories.OrderRepository;
 import com.example.demo.model.persistence.repositories.ApplicationUserRepository;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 @RestController
 @RequestMapping("/api/order")
 public class OrderController {
-	
-	
+
+	private static final Logger logger = LogManager.getLogger(OrderController.class);
 	@Autowired
 	private ApplicationUserRepository applicationUserRepository;
 	
@@ -42,8 +43,10 @@ public class OrderController {
 	public ResponseEntity<List<UserOrder>> getOrdersForUser(@PathVariable String username) {
 		ApplicationUser user = applicationUserRepository.findByUsername(username);
 		if(user == null) {
+			logger.info("Order get request failed.");
 			return ResponseEntity.notFound().build();
 		}
+		logger.info("Order get request succeed.");
 		return ResponseEntity.ok(orderRepository.findByUser(user));
 	}
 }
